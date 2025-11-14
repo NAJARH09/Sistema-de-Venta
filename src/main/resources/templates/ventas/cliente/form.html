@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cliente y Productos</title>
+
+    <style>
+        body {
+            background: #ffe6f2;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            border-top: 6px solid #d63384;
+        }
+
+        h2 {
+            color: #d63384;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            margin-top: 30px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #bbb;
+        }
+
+        textarea {
+            resize: none;
+            height: 60px;
+        }
+
+        .btn {
+            background: #d63384;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #ad1457;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #d63384;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- CLIENTE -->
+    <h2>Cliente</h2>
+
+    <form th:action="@{/ventas/cliente/guardar}" th:object="${cliente}" method="post">
+
+        <input type="hidden" th:field="*{id}">
+
+        <label>Nombre</label>
+        <input type="text" th:field="*{nombre}" placeholder="Ej. Ana Torres" required>
+
+        <label>Teléfono</label>
+        <input type="text" th:field="*{telefono}" placeholder="987654321" required>
+
+        <button type="submit" class="btn">Guardar Cliente</button>
+    </form>
+</div>
+
+</body>
+</html>

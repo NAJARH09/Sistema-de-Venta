@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Boleta - Ésika</title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f9f9fb;
+            margin: 0;
+            padding: 40px;
+            color: #222;
+        }
+
+        .boleta-container {
+            width: 75%;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 40px 50px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2rem;
+            color: #111;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        h2::after {
+            content: "";
+            width: 100px;
+            height: 3px;
+            background: #e91e63;
+            display: block;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .info {
+            margin-bottom: 30px;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #111;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #111;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background: #fdf3f6;
+        }
+
+        tr:hover {
+            background-color: #fbe4eb;
+            transition: 0.3s ease;
+        }
+
+        .total-box {
+            margin-top: 35px;
+            padding: 22px 25px;
+            background: #fdf3f6;
+            border-left: 6px solid #e91e63;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #111;
+            text-align: right;
+        }
+
+        .btn-print {
+            display: block;
+            width: 260px;
+            margin: 40px auto 0;
+            text-align: center;
+            background-color: #111;
+            color: white;
+            padding: 12px 0;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-print:hover {
+            background-color: #e91e63;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(233,30,99,0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="boleta-container">
+
+    <h2>Boleta de Venta</h2>
+
+    <div class="info">
+        <p><span class="label">Cliente:</span> <span th:text="${venta.cliente.nombre}">Juan Pérez</span></p>
+        <p><span class="label">Fecha:</span> <span th:text="${venta.fecha}">2025-01-01</span></p>
+        <p><span class="label">Número de Boleta:</span> <span th:text="${venta.numero}">B001-000123</span></p>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="item : ${venta.detalles}">
+            <td th:text="${item.producto.nombre}">Producto X</td>
+            <td th:text="${item.cantidad}">1</td>
+            <td th:text="${item.precio}">15.90</td>
+            <td th:text="${item.cantidad * item.precio}">15.90</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="total-box">
+        Total: S/ <span th:text="${venta.total}">50.00</span>
+    </div>
+
+    <a href="#" onclick="window.print()" class="btn-print">Imprimir Boleta</a>
+
+</div>
+
+</body>
+</html>

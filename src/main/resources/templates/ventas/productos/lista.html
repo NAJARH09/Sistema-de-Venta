@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <meta charset="UTF-8">
+    <title>Productos del Cliente</title>
+
+    <style>
+
+        /* =======================
+           TEMA GLOBAL ÉSIKA
+        ======================== */
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #f9f9fb;
+            color: #222;
+            padding: 25px;
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: 500;
+            color: #111;
+            margin-bottom: 25px;
+        }
+
+        h2::after {
+            content: "";
+            width: 90px;
+            height: 3px;
+            background: #e91e63;
+            display: block;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+        .container {
+            display: flex;
+            gap: 25px;
+        }
+
+        /* ========== TABLA ========== */
+        .tabla-container {
+            flex: 4;
+            background: #fff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow-y: auto;
+        }
+
+        .btn-back {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 15px;
+            background: #111;
+            color: #fff;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .btn-back:hover {
+            background: #e91e63;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #111;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fdf3f6;
+        }
+
+        tr:hover {
+            background-color: #fbe4eb;
+            transition: 0.25s;
+        }
+
+        /* Botones */
+        .btn-edit, .btn-del {
+            padding: 8px 13px;
+            border-radius: 7px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .btn-edit { background: #e91e63; }
+        .btn-edit:hover { background: #c2185b; }
+
+        .btn-del { background: #111; }
+        .btn-del:hover { background: #e91e63; }
+
+        /* ========== FORMULARIO ========== */
+        .form-container {
+            flex: 2;
+            background: #fff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            height: fit-content;
+        }
+
+        label {
+            display: block;
+            margin: 8px 0 5px;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 90%;
+            padding: 12px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #e91e63;
+            outline: none;
+            box-shadow: 0 0 6px rgba(233, 30, 99, 0.3);
+        }
+
+        .btn-save {
+            width: 100%;
+            background: #e91e63;
+            border: none;
+            padding: 12px;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn-save:hover {
+            background: #c2185b;
+        }
+        @media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+    }
+}
+
+
+    </style>
+
+    <script>
+        function calcularImporte() {
+            let precio = parseFloat(document.getElementById("precio").value) || 0;
+            let cantidad = parseInt(document.getElementById("cantidad").value) || 0;
+            document.getElementById("importe").value = (precio * cantidad).toFixed(2);
+        }
+    </script>
+
+</head>
+
+<body>
+<!-- FLASH MESSAGES -->
+<div th:if="${success}" style="background:#d4edda;color:#155724;padding:12px;border-radius:8px;margin-bottom:18px;">
+    <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+</div>
+
+<div th:if="${error}" style="background:#f8d7da;color:#721c24;padding:12px;border-radius:8px;margin-bottom:18px;">
+    <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+</div>
+
+
+<h2>
+    Productos de
+    <span th:text="${cliente.nombre}" style="color:#e91e63; font-size:1.3em; font-weight:600;"></span>
+</h2>
+
+
+<div class="container">
+
+    <!-- ================= TABLA ================= -->
+    <div class="tabla-container">
+
+        <a th:href="@{'/ventas/cliente'}" class="btn-back">← Regresar</a>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Importe</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:if="${#lists.isEmpty(productos)}">
+                <td colspan="7" style="padding:20px;color:#e91e63;">Aún no ha agregado productos.</td>
+            </tr>
+
+            <tr th:each="p : ${productos}">
+                <td th:text="${p.idProducto}"></td>
+                <td th:text="${p.nombre}"></td>
+                <td th:text="${p.des}"></td>
+                <td th:text="${p.cantidad}"></td>
+                <td th:text="${p.precio}"></td>
+                <td th:text="${p.importe}"></td>
+                <td>
+                    <a th:href="@{'/ventas/productos/editar/' + ${p.idProducto}}" class="btn-edit">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a th:href="@{'/ventas/productos/eliminar/' + ${p.idProducto}}" class="btn-del">
+                        <i class="bi bi-trash3-fill"></i>
+                    </a>
+
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- ================= FORMULARIO ================= -->
+    <div class="form-container">
+
+        <form th:action="@{${producto.idProducto == 0} ? '/ventas/productos/guardar' : '/ventas/productos/actualizar/' + ${producto.idProducto}}"
+              th:object="${producto}" method="post">
+
+            <input type="hidden" th:field="*{cliente.id}">
+            <h2> Productos :</h2>
+
+            <label>Nombre</label>
+            <input type="text" th:field="*{nombre}" required>
+
+            <label>Descripción</label>
+            <textarea th:field="*{des}" required></textarea>
+
+            <label>Cantidad</label>
+            <input type="number" id="cantidad" th:field="*{cantidad}" oninput="calcularImporte()" required>
+
+            <label>Precio</label>
+            <input type="number" step="0.01" id="precio" th:field="*{precio}" oninput="calcularImporte()" required>
+
+            <label>Importe</label>
+            <input type="number" step="0.01" id="importe" th:field="*{importe}" readonly>
+
+            <button class="btn-save" type="submit"
+                    th:text="${producto.idProducto == 0 ? 'Guardar' : 'Actualizar'}"></button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
