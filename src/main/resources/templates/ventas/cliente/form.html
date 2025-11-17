@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Cliente y Productos</title>
+    <title>Cliente</title>
 
     <style>
         body {
@@ -28,12 +28,6 @@
             margin-bottom: 15px;
         }
 
-        .section-title {
-            margin-top: 30px;
-            font-size: 20px;
-            color: #333;
-        }
-
         label {
             font-weight: 600;
             color: #333;
@@ -43,14 +37,9 @@
             width: 100%;
             padding: 10px;
             margin-top: 5px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             border-radius: 10px;
             border: 1px solid #bbb;
-        }
-
-        textarea {
-            resize: none;
-            height: 60px;
         }
 
         .btn {
@@ -69,29 +58,29 @@
             background: #ad1457;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+        .back-btn {
+            background: #6c757d;
         }
 
-        th {
-            background: #d63384;
-            color: white;
-            padding: 10px;
-            text-align: left;
+        .back-btn:hover {
+            background: #545b62;
         }
 
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        .error-box {
+            background: #ffe0e6;
+            border-left: 5px solid #d63384;
+            padding: 12px;
+            border-radius: 8px;
+            color: #b3003c;
+            font-weight: 600;
+            margin-bottom: 15px;
         }
 
-        .empty {
-            text-align: center;
-            padding: 20px;
-            font-style: italic;
-            color: #555;
+        .field-error {
+            color: red;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: block;
         }
     </style>
 </head>
@@ -100,21 +89,41 @@
 
 <div class="container">
 
-    <!-- CLIENTE -->
-    <h2>Cliente</h2>
+    <h2 th:text="${cliente.id == 0} ? 'Nuevo Cliente' : 'Editar Cliente'"></h2>
 
-    <form th:action="@{/ventas/cliente/guardar}" th:object="${cliente}" method="post">
+    <form th:action="@{/ventas/cliente/guardar}"
+          th:object="${cliente}"
+          method="post">
 
-        <input type="hidden" th:field="*{id}">
+        <!-- ID cliente -->
+        <input type="hidden" th:field="*{id}"/>
 
+        <!-- ID campaña -->
+        <input type="hidden" th:field="*{campana.id}"/>
+
+        <!-- NOMBRE -->
         <label>Nombre</label>
-        <input type="text" th:field="*{nombre}" placeholder="Ej. Ana Torres" required>
+        <input type="text" th:field="*{nombre}" placeholder="Ej. Ana Torres">
+        <span class="field-error"
+              th:if="${#fields.hasErrors('nombre')}"
+              th:errors="*{nombre}"></span>
 
+        <!-- TELEFONO -->
         <label>Teléfono</label>
-        <input type="text" th:field="*{telefono}" placeholder="987654321" required>
+        <input type="text" th:field="*{telefono}" placeholder="987654321">
+        <span class="field-error"
+              th:if="${#fields.hasErrors('telefono')}"
+              th:errors="*{telefono}"></span>
 
         <button type="submit" class="btn">Guardar Cliente</button>
+
+        <a th:href="@{'/ventas/cliente/lista/' + ${cliente.campana.id}}"
+           class="btn back-btn" style="margin-left:10px;">
+            Volver
+        </a>
     </form>
+
+
 </div>
 
 </body>

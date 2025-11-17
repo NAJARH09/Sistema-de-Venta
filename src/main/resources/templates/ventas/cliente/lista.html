@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Clientes - Ésika</title>
+    <title>Clientes - Ésika campnaña</title>
     <style>
         body {
           font-family: 'Poppins', sans-serif;
@@ -127,7 +127,11 @@
 </head>
 <body>
 
-<h2>Lista de Clientes - Ésika</h2>
+<h2>Clientes de la campaña: <span th:text="${campana.nombre}"></span></h2>
+
+<p style="text-align:center; margin-top:-20px; color:#e91e63; font-size:1.1rem;">
+    Total de clientes: <strong th:text="${totalClientes}"></strong>
+</p>
 
 <table>
     <thead>
@@ -138,24 +142,25 @@
         <th>Acciones</th>
     </tr>
     </thead>
+
     <tbody>
     <tr th:each="cli : ${clientes}">
-        <td th:text="${cli.id}">1</td>
-        <td th:text="${cli.nombre}">Nombre Ejemplo</td>
-        <td th:text="${cli.telefono}">999999999</td>
+        <td th:text="${cli.id}"></td>
+        <td th:text="${cli.nombre}"></td>
+        <td th:text="${cli.telefono}"></td>
+
         <td class="actions">
             <a th:href="@{'/ventas/cliente/editar/' + ${cli.id}}" class="btn btn-edit">Editar</a>
             <a th:href="@{'/ventas/cliente/eliminar/' + ${cli.id}}" class="btn btn-del">Eliminar</a>
-            <!-- Aquí verás los productos del cliente -->
             <a th:href="@{'/ventas/productos/cliente/' + ${cli.id}}" class="btn btn-ver">Productos</a>
-
-
         </td>
     </tr>
     </tbody>
 </table>
 
-<a th:href="@{/ventas/cliente/nuevo}" class="btn-new">+ Nuevo Cliente</a>
+<a th:href="@{'/ventas/cliente/nuevo/' + ${campana.id}}" class="btn-new">+ Nuevo Cliente</a>
+
+
 
 </body>
 </html>

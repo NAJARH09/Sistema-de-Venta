@@ -1,65 +1,122 @@
 package com.crud.com.Producto.Controller;
 
+import com.crud.com.Producto.model.Campana;
 import com.crud.com.Producto.model.Cliente;
+import com.crud.com.Producto.repository.CampanaRepository;
 import com.crud.com.Producto.repository.ClienteRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 @Controller
-@RequestMapping("ventas/cliente")
-// 🔹 Esta anotación define la ruta base: todas las URLs de este controlador
-// comenzarán con "ventas/cliente". Ejemplo: /ventas/cliente/nuevo
+@RequestMapping("/ventas/cliente")
 public class ClienteController {
 
     @Autowired
     private ClienteRepository clienteRepo;
-    // 🔹 @Autowired le dice a Spring Boot que inyecte automáticamente
-    // una instancia de ClienteRepository para usar sus métodos (findAll, save, etc.)
-    // 💡 Mejora: el nombre de variable debe empezar en minúscula (clienteRepo), no ClienteRepo.
 
-    // 🔹 LISTAR CLIENTES
-    @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("clientes", clienteRepo.findAll());
-        // 💡 Mejora: usa "clientes" en plural porque representa una lista
-        // model.addAttribute() permite enviar datos del backend a la vista (HTML)
-        return "ventas/cliente/lista"; // 🌸 Se dirige a templates/ventas/cliente/lista.html
+    @Autowired
+    private CampanaRepository campanaRepo;
+
+    // LISTAR CLIENTES POR CAMPAÑA
+    @GetMapping("/lista/{idCampana}")
+    public String listar(@PathVariable int idCampana, Model model) {
+
+        Campana campana = campanaRepo.findById(idCampana)
+                .orElseThrow(() -> new RuntimeException("Campaña no encontrada"));
+
+        model.addAttribute("campana", campana);
+        model.addAttribute("clientes", campana.getClientes());
+        model.addAttribute("totalClientes", campana.getClientes().size());
+
+        return "ventas/cliente/lista";
     }
 
-    // 🔹 FORMULARIO NUEVO CLIENTE
-    @GetMapping("/nuevo")
-    public String nuevo(Model model) {
-        model.addAttribute("cliente", new Cliente());
-        // Aquí se crea un objeto vacío para llenar en el formulario
-        return "ventas/cliente/form"; // 🌸 Se dirige a templates/ventas/cliente/form.html
+    // NUEVO CLIENTE
+    @GetMapping("/nuevo/{idCampana}")
+    public String nuevo(@PathVariable int idCampana, Model model) {
+
+        Campana campana = campanaRepo.findById(idCampana)
+                .orElseThrow(() -> new RuntimeException("Campaña no encontrada"));
+
+        Cliente cliente = new Cliente();
+        cliente.setCampana(campana); // ASOCIAR
+
+        model.addAttribute("cliente", cliente); // MUY IMPORTANTE
+        model.addAttribute("campana", campana);
+        return "ventas/cliente/form"; // DEVOLVEMOS FORMULARIO
     }
 
-    // 🔹 GUARDAR CLIENTE
-    @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Cliente cliente) {
-        clienteRepo.save(cliente);
-        // @ModelAttribute conecta los campos del formulario con el objeto Cliente
-        // save() guarda o actualiza según si el id ya existe
-        return "redirect:/ventas/cliente";
-        // ✅ Redirige a la lista después de guardar
-    }
 
-    // 🔹 EDITAR CLIENTE
+    // EDITAR CLIENTE
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable int id, Model model) {
-        Cliente cliente = clienteRepo.findById(id).orElse(null);
-        // orElse(null) evita errores si no se encuentra el cliente
+
+        Cliente cliente = clienteRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
         model.addAttribute("cliente", cliente);
-        return "ventas/cliente/form"; // Usa el mismo formulario para editar
+        model.addAttribute("campana", cliente.getCampana());
+        return "ventas/cliente/form";
     }
 
-    // 🔹 ELIMINAR CLIENTE
+    // GUARDAR CLIENTE
+    @PostMapping("/guardar")
+    public String guardar(
+            @ModelAttribute @Valid Cliente cliente,
+            BindingResult result,
+            Model model) {
+
+        int idCampana = cliente.getCampana().getId();
+
+        // Validación de duplicados
+        if (cliente.getId() == 0) { // NUEVO
+            if (clienteRepo.existsByNombreAndCampanaId(cliente.getNombre(), idCampana)) {
+                result.rejectValue("nombre", "error.cliente", "El nombre ya existe en esta campaña");
+            }
+            if (clienteRepo.existsByTelefonoAndCampanaId(cliente.getTelefono(), idCampana)) {
+                result.rejectValue("telefono", "error.cliente", "El teléfono ya existe en esta campaña");
+            }
+        } else { // EDICIÓN
+            if (clienteRepo.existsByNombreAndCampanaIdAndIdNot(cliente.getNombre(), idCampana, cliente.getId())) {
+                result.rejectValue("nombre", "error.cliente", "El nombre ya existe en esta campaña");
+            }
+            if (clienteRepo.existsByTelefonoAndCampanaIdAndIdNot(cliente.getTelefono(), idCampana, cliente.getId())) {
+                result.rejectValue("telefono", "error.cliente", "El teléfono ya existe en esta campaña");
+            }
+        }
+
+        // SI HAY ERRORES, volvemos al FORMULARIO
+        if (result.hasErrors()) {
+            model.addAttribute("cliente", cliente); // obligatorio
+            model.addAttribute("campana", cliente.getCampana());
+            return "ventas/cliente/form"; // NO REDIRECT
+        }
+
+        // GUARDAR CLIENTE
+        clienteRepo.save(cliente);
+
+        // DESPUÉS DEL GUARDADO, sí podemos redirigir a la lista
+        return "redirect:/ventas/cliente/lista/" + idCampana;
+    }
+
+
+    // ELIMINAR CLIENTE
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable int id) {
-        clienteRepo.deleteById(id);
-        return "redirect:/ventas/cliente"; // ⚠️ Corregido: antes tenías "ventas/clientes"
-    }
 
+        Cliente cliente = clienteRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        int idCampana = cliente.getCampana().getId();
+
+        clienteRepo.delete(cliente);
+
+        return "redirect:/ventas/cliente/lista/" + idCampana;
+    }
 }

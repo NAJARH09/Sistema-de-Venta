@@ -17,9 +17,23 @@ public class Cliente {
     private String apellido;
     private String telefono;
 //Una entidad es una clase Java que representa una tabla en la base
-@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-private List<Producto> productos = new ArrayList<>();
+// UNA campaña tiene MUCHOS clientes
 
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Producto> productos = new ArrayList<>();
+    //para campanas
+    @ManyToOne
+    @JoinColumn(name = "campana_id")
+    private Campana campana;
+
+
+
+    // =============== RELACIÓN INVERSA =================
+    // Cliente NO controla → usa mappedBy
+    // "clientes" es el nombre de la lista en Campana
+    // Esta lista solo refleja
+    // Cliente NO crea tabla intermedia
 }
 /*
 Los datos que necesitamos el cliente :

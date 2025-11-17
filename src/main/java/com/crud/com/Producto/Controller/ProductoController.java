@@ -29,7 +29,7 @@ public class ProductoController {
     // ==============================
     // 1. LISTAR PRODUCTOS DE UN CLIENTE
     // ==============================
-    @GetMapping("/cliente/{idCliente}")
+    @GetMapping("/cliente/{idCliente}")//para diferencia al cliente
     public String listarProductosCliente(@PathVariable Integer idCliente, Model model,
                                          @ModelAttribute("msg") String msg) {
 
@@ -44,6 +44,7 @@ public class ProductoController {
         model.addAttribute("productos", cliente.getProductos());
         model.addAttribute("producto", nuevoProducto);
         model.addAttribute("msg", msg);
+        model.addAttribute("campanaId", cliente.getCampana().getId());
 
         return "ventas/productos/lista";
     }

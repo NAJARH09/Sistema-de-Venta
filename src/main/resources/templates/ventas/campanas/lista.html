@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Campañas - Ésika</title>
+
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f9f9fb;
+        margin: 0;
+        padding: 40px;
+        color: #222;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 1.9rem;
+        color: #111;
+        margin-bottom: 35px;
+    }
+
+    h2::after {
+        content: "";
+        width: 90px;
+        height: 3px;
+        background: #e91e63;
+        display: block;
+        margin: 8px auto 0;
+        border-radius: 2px;
+    }
+
+    table {
+        width: 85%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    th, td {
+        padding: 14px 20px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #111;
+        color: #fff;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #fdf3f6;
+    }
+
+    tr:hover {
+        background-color: #fbe4eb;
+        transition: background-color 0.3s ease;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        text-decoration: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #fff;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-ver {
+        background-color: #e91e63;
+    }
+
+    .btn-ver:hover {
+        background-color: #c2185b;
+        transform: translateY(-2px);
+    }
+
+    .btn-edit {
+        background-color: #111;
+    }
+
+    .btn-edit:hover {
+        background-color: #333;
+        transform: translateY(-2px);
+    }
+
+    .btn-del {
+        background-color: #666;
+    }
+
+    .btn-del:hover {
+        background-color: #000;
+        transform: translateY(-2px);
+    }
+
+    .btn-new {
+        display: block;
+        width: 220px;
+        margin: 40px auto;
+        text-align: center;
+        background-color: #111;
+        color: white;
+        padding: 12px 0;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-new:hover {
+        background-color: #e91e63;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(233,30,99,0.3);
+    }
+  </style>
+
+</head>
+<body>
+
+<h2>Lista de Campañas - Ésika</h2>
+<div th:if="${error != null}"
+     style="width:85%;margin:20px auto;padding:15px;border-left:5px solid #e91e63;
+            background:#ffe6ef;border-radius:10px;color:#b3003c;font-weight:600;">
+  <span th:text="${error}"></span>
+</div>
+
+<div th:if="${mensaje != null}"
+     style="width:85%;margin:20px auto;padding:15px;border-left:5px solid #4caf50;
+            background:#e8fbe8;border-radius:10px;color:#1b5e20;font-weight:600;">
+  <span th:text="${mensaje}"></span>
+</div>
+
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Fecha Inicio</th>
+    <th>Fecha Fin</th>
+    <th>Acciones</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr th:each="camp : ${campanas}">
+    <td th:text="${camp.id}"></td>
+    <td th:text="${camp.nombre}"></td>
+    <td th:text="${camp.fechaInicio}"></td>
+    <td th:text="${camp.fechaFin}"></td>
+
+    <td class="actions">
+      <!-- <a th:href="@{'/ventas/cliente/lista/' + ${camp.id}}" class="btn btn-ver">Ver Clientes</a> -->
+      <a th:href="@{'/ventas/campanas/editar/' + ${camp.id}}" class="btn btn-edit">Editar</a>
+      <a th:href="@{'/ventas/campanas/eliminar/' + ${camp.id}}" class="btn btn-del">Eliminar</a>
+
+      <a th:href="@{'/ventas/cliente/lista/' + ${camp.id}}" class="btn btn-ver">
+        Ver Clientes
+      </a>
+
+
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<a th:href="@{/ventas/campanas/nuevo}" class="btn-new">+ Nueva Campaña</a>
+
+</body>
+</html>
